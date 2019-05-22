@@ -68,7 +68,7 @@ public class Paper {
 
 	@Override
 	public String toString() {
-		return "Paper [eprintid=" + eprintid + ", title=" + title + ", issn=" + issn + ", publication=" + publication
+		return "\nPaper [eprintid=" + eprintid + ", title=" + title + ", issn=" + issn + ", publication=" + publication
 				+ ", type=" + type + ", types=" + types + "]";
 	}
 

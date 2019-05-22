@@ -34,7 +34,7 @@ public class PortoDAO {
 				
 			}
 			
-
+			conn.close();
 			return autori;
 
 		} catch (SQLException e) {
@@ -46,14 +46,17 @@ public class PortoDAO {
 	/*
 	 * Dato l'id ottengo l'articolo.
 	 */
-	public Paper getArticolo(int eprintid) {
+	public Paper getArticolo(Author a1, Author a2) {
 
-		final String sql = "SELECT * FROM paper where eprintid=?";
+		final String sql = "SELECT  distinct p.eprintid, p.title, p.issn, p.publication, p.`type`, p.types " + 
+				"FROM  creator AS c1, creator AS c2, paper AS p " + 
+				"WHERE  c1.authorid=? AND c2.authorid=? and c1.eprintid=c2.eprintid AND p.eprintid=c1.eprintid ";
 
 		try {
 			Connection conn = DBConnect.getConnection();
 			PreparedStatement st = conn.prepareStatement(sql);
-			st.setInt(1, eprintid);
+			st.setInt(1, a1.getId());
+			st.setInt(2, a2.getId());
 
 			ResultSet rs = st.executeQuery();
 
@@ -63,6 +66,7 @@ public class PortoDAO {
 				return paper;
 			}
 
+			conn.close();
 			return null;
 
 		} catch (SQLException e) {
@@ -74,24 +78,28 @@ public class PortoDAO {
 	
 	
 	
-	 public List<Integer> getAutoriConnessi(Integer id) {
+	 public List<Integer> getAutoriConnessi(Integer idA) {
 
-		final String sql = "SELECT distinct c2.authorid " + 
-				"FROM  creator AS c1, creator AS c2 " + 
-				"WHERE c1.eprintid=c2.eprintid   AND c1.authorid=? AND c1.authorid!=c2.authorid ";
+		final String sql = "SELECT DISTINCT a.id " + 
+				"FROM  creator AS c1, creator AS c2, author AS a " + 
+				"WHERE c1.eprintid=c2.eprintid   AND c1.authorid=? AND c1.authorid!=c2.authorid AND a.id=c2.authorid ";
 		List< Integer> coautori = new ArrayList<Integer>();
 
 		try {
 			Connection conn = DBConnect.getConnection();
 			PreparedStatement st = conn.prepareStatement(sql);
-			st.setInt(1, id);
+			st.setInt(1, idA);
 			ResultSet rs = st.executeQuery();
 
 			while (rs.next()) {
-				int  autId =  rs.getInt("authorid");
+				int  autId =  rs.getInt("id");
+				
+				
+		
 				coautori.add( autId);
 				
 			}
+			conn.close();
 			
 
 			return coautori;
